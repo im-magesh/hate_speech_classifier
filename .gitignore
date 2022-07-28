@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 infer.py
 weights/BERTClassifierWeights.pt
+.DS_Store
