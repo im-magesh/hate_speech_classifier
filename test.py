@@ -1,9 +1,24 @@
 from infer import inference
-from flask import Flask, request, jsonify, render_template
+from fastapi import FastAPI
+from pydantic import BaseModel
+import uvicorn
+import json
 
+app = FastAPI()
+
+class payload(BaseModel):
+    sentence: str
+
+
+@app.get("/health")
+async def health_check():
+    return "<h>Im Alive!</h>"
+
+@app.post("/inference")
+async def sentiment(item: payload):
+    result : dict = inference(item.sentence)
+    return result
 
 
 if __name__ == "__main__":
-    sentence : str = "All these gays are son of the bitches. Mother fuckers never got any pussy in their life so they roaming catching dicks. Man I wish the days were old, were we could have electrocute these mother fuckers. We need to treat these fagots like the way Nazis treated Jews."
-    result : dict = inference(sentence=sentence)
-    print(result)
+    uvicorn.run(app, port=8080, host='0.0.0.0')

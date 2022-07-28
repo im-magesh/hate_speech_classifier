@@ -1,12 +1,17 @@
 import torch
 import torch.nn
 
-from .model import BertClassifier
+from model import BertClassifier
 from transformers import BertTokenizer, BertModel
 #from .remove_logs import set_global_logging_level 
+import configparser
+config = configparser.ConfigParser()
+config.read('config.ini')
+weights_path = config['PATH']['model']
+
 
 model = BertClassifier()
-model.load_state_dict(torch.load("HateClassifier/weights/BERTClassifierWeights.pt"))
+model.load_state_dict(torch.load(weights_path))
 
 def inference(sentence : str, model : BertClassifier = model) -> dict:
   with torch.no_grad():
@@ -16,9 +21,6 @@ def inference(sentence : str, model : BertClassifier = model) -> dict:
 
     mask = embedded["attention_mask"]
     token_ids = embedded["input_ids"].squeeze(1)
-
-    print(token_ids.shape)
-    print(mask.shape)
     output = model(token_ids,mask)
 
     #convert this dict to json object if you're going to send it as response
